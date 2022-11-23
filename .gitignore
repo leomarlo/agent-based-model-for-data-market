@@ -1,3 +1,4 @@
 ## ENVIRONMENTS
 
 .venv
+*__pycache_*
