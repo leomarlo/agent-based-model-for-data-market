@@ -1,4 +1,4 @@
-from db.database import Database
-## create database
+from db.database import Dataset
+## create Dataset
 class Initialize:
-    data = Database()
+    dataset = Dataset()

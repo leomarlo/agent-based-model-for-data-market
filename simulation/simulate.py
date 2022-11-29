@@ -1,8 +1,8 @@
-from db.database import Database
+from db.database import Dataset
 
 
-## create database
-data = Database()
+## create Dataset
+data = Dataset()
 
 ## create some agents
 N = 100

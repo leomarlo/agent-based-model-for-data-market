@@ -1,4 +1,4 @@
-from db.database import Database, Content, MetaData
+from db.database import Dataset, Content, MetaData
 from world.initialize import Initialize
 
 class BaseAgent:
@@ -12,7 +12,7 @@ class BaseAgent:
 
     ## upload data
     def uploadWithoutMetadata(self, content: Content):
-        emptyMetadata = MetaData("",dict())
+        emptyMetadata = MetaData("")
         self.upload(content, emptyMetadata)
 
     
@@ -23,21 +23,26 @@ class BaseAgent:
             content (Content): content
             metadata (MetaData): metadata
         """
-        Initialize.data.upload(content, metadata)
-        
+        Initialize.dataset.upload(content, metadata)
+    
+    def __repr__(self) -> str:
+        return f"{self.name}"+f" ({self.trustworthiness})" 
 
     ## verify
     def verify(self, index: int, label: str, confirm: bool):
-        if label not in Initialize.data[index]:
+        """
+        Just verify one tag for one data (confirm or reject)
+        """
+        if label not in Initialize.dataset.data[index]: 
             raise Exception('Doesnt exist')
         annotation = {label: confirm}
-        Initialize.data.annotate(index=index, labels=annotation)
+        Initialize.dataset.annotate(index=index, labels=annotation)
         
     
     ## annotate
     def annotate(self, index: int, labels: list):
         annotations = {label: True for label in labels}
-        Initialize.data.annotate(index=index, labels=annotations)
+        Initialize.dataset.annotate(index=index, labels=annotations)
 
 
  

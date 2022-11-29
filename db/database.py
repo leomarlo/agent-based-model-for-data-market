@@ -36,10 +36,13 @@ class Data:
         for label, vote in labels.items():
             self.metadata.tags[label]["confirm"] = self.metadata.tags[label]["confirm"] + (1 if vote else -1)
             self.metadata.tags[label]["total"] += 1
+    
+    def __repr__(self) -> str:
+        return '\nData(content={}, metadata={})'.format(self.content.tags, self.metadata.tags)
 
 
 
-class Database:
+class Dataset:
 
     def __init__(self) -> None:
         self.data = []
@@ -47,10 +50,6 @@ class Database:
         ## upload data
     def upload(self, newContent: Content, newMetadata: MetaData):
         self.data.append(Data(newContent, newMetadata))
-
-#I'll keep this open :)
-# :) 
-# I might make some lunch in between
 
     def annotate(self, index, labels):
         self.data[index].annotate(labels)

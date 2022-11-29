@@ -1,5 +1,10 @@
-from config.agentConfig import AgentsConfig
 from world.initialize import Initialize
+from utils.auxiliary import createTags
+from db.database import Dataset, Content, MetaData
+from base.base import BaseAgent
+from config.agentConfig import AgentsConfig
+import string
+import random
 
 
 print("There are {n} actors and {b} bad actors.".format(
@@ -7,38 +12,35 @@ print("There are {n} actors and {b} bad actors.".format(
     b=AgentsConfig.initialBadUploads
 ))
 
-from db.database import Database, Content, MetaData
-from base.base import BaseAgent
-from config.agentConfig import AgentsConfig
-import string
-alphabet = list(string.ascii_lowercase)
+## create Dataset
+data = Dataset()
 
-## create database
-data = Database()
-
-## create initialdata:
-possibleTags = alphabet
+## all possible tags
+possibleTags = list(string.ascii_lowercase)
 truth = 'abc'
 
 ## load agents
+print('There are {} agents.'.format(AgentsConfig.totalActors))
 agents = list()
 for i in range(AgentsConfig.totalActors):
     agent = BaseAgent(str(i))
     agents.append(agent)
 
+# print(agents)
 
+# quit()
 ## start scenarios
-    
 # from essential_generators import DocumentGenerator
 # gen = DocumentGenerator()
 # print(gen.sentence())
 
+print('There are {} initial bad data uploads.'. format(AgentsConfig.initialBadUploads))
 for i, agent in enumerate(agents):
     content = Content(truth, tags=[*truth])
     if i <= AgentsConfig.initialBadUploads:
         agent.badactor = True
         # upload badly
-        metadata = MetaData(tags=['a', 'd', 't'])
+        metadata = MetaData(tags=createTags(baseTruth=possibleTags,doNotInclude='abc', howMany=3))
         agent.upload(content, metadata=metadata)
     else:
         # upload well
@@ -46,10 +48,19 @@ for i, agent in enumerate(agents):
         agent.upload(content=content, metadata=metadata)
     # print(len(data.data))
 
+print([ d for i,d in enumerate(Initialize.dataset.data) if i<70])
+
+
 
 ## Agents start to verify
 for agent in agents:
-    for i, entry in enumerate(Initialize.data.data):
+    # each agent goes through all of the data entries
+    checkedAlready = list()
+    for i in random.choices(range(len(Initialize.dataset.data)), k=AgentsConfig.numberOfVerificationsPerActor):
+        if i in checkedAlready:
+            continue
+        checkedAlready.append(i)
+        entry = Initialize.dataset.data[i]
         content = entry.content
         metadata = entry.metadata
         for tag, info in metadata.tags.items():
@@ -62,13 +73,16 @@ for agent in agents:
 
 
 def checkScore():
-    for i, entry in enumerate(Initialize.data.data):
+    for i, entry in enumerate(Initialize.dataset.data):
         entry.metadata.tags  # {a:{confirm: 100, total: 300}, d:{confirm: 50, total: 400}} 
         entry.content.tags  # [a,b,c]}
         
 
 
-# for i, d in enumerate(Initialize.data.data):
+    
+
+
+# for i, d in enumerate(Initialize.dataset.data):
 #     print(d.content.description)
 #     if i>4:
 #         break
